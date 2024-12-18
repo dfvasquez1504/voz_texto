@@ -16,7 +16,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for better styling
+# Custom CSS for better styling, including improved button styles
 st.markdown("""
     <style>
     .main > div {
@@ -24,11 +24,50 @@ st.markdown("""
     }
     .stButton>button {
         width: 100%;
-        border-radius: 10px;
+        border-radius: 20px;
         height: 3rem;
+        background: linear-gradient(90deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    .stButton>button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
     }
     .css-1d391kg {
         padding: 2rem 1rem;
+    }
+    .bk-btn {
+        border-radius: 25px !important;
+        background: linear-gradient(90deg, #3498db, #2980b9) !important;
+        border: none !important;
+        color: white !important;
+        font-size: 1.1rem !important;
+        font-weight: 500 !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+        transition: all 0.3s ease !important;
+    }
+    .bk-btn:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2) !important;
+    }
+    .bk {
+        background: transparent !important;
+    }
+    .bk-canvas {
+        background: transparent !important;
+    }
+    .bk-root {
+        background: transparent !important;
+    }
+    /* Container styling for the recording button */
+    .record-button-container {
+        background: transparent !important;
+        padding: 1rem;
+        border-radius: 25px;
+        margin: 1rem 0;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -79,7 +118,13 @@ st.markdown("---")
 st.write("### 🎤 Entrada de Voz")
 st.write("Presiona el botón y habla claramente lo que deseas traducir")
 
-stt_button = Button(label="🎤 Iniciar Grabación", width=300, height=50)
+# Create a custom styled button
+stt_button = Button(
+    label="🎤 Iniciar Grabación", 
+    width=300, 
+    height=50, 
+    css_classes=['bk-btn']
+)
 
 stt_button.js_on_event("button_click", CustomJS(code="""
     var recognition = new webkitSpeechRecognition();
@@ -100,6 +145,8 @@ stt_button.js_on_event("button_click", CustomJS(code="""
     recognition.start();
     """))
 
+# Add custom container for the button
+st.markdown('<div class="record-button-container">', unsafe_allow_html=True)
 result = streamlit_bokeh_events(
     stt_button,
     events="GET_TEXT",
@@ -108,6 +155,7 @@ result = streamlit_bokeh_events(
     override_height=75,
     debounce_time=0
 )
+st.markdown('</div>', unsafe_allow_html=True)
 
 if result:
     if "GET_TEXT" in result:
